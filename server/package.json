@@ -15,6 +15,7 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
+    "@tic-tac-toe-ws/common": "file:../common",
     "@types/node": "^24.3.0",
     "@types/ws": "^8.18.1",
     "ts-node": "^10.9.2",
