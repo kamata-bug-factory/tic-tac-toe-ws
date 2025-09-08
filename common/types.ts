@@ -61,3 +61,11 @@ export interface MoveMessage {
   x: Position;
   y: Position;
 }
+
+/**
+ * クライアントがサーバーに送信する「ゲームをリセットする」メッセージ。
+ * 勝敗が決まった後、盤面を初期化するために使用される。
+ */
+export interface ResetMessage {
+  type: 'reset';
+}

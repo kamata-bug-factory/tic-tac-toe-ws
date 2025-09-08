@@ -4,6 +4,7 @@ import type {
   Board,
   Position,
   MoveMessage,
+  ResetMessage,
 } from '@tic-tac-toe-ws/common';
 
 /**
@@ -67,15 +68,27 @@ export default function App() {
 
   /**
    * プレイヤーの手をサーバーに送信
-      * @param x Position 列番号 (0〜2)
+   * @param x Position 列番号 (0〜2)
    * @param y Position 行番号 (0〜2)
    */
   const sendMove = (x: Position, y: Position) => {
     if (!webSocket || winner) {
-return; // 未接続またはゲーム終了時は何もしない
-}
+      return; // 未接続またはゲーム終了時は何もしない
+    }
 
     const message: MoveMessage = { type: 'move', x, y };
+    webSocket.send(JSON.stringify(message));
+  };
+
+  /**
+   * ゲームリセットをサーバーに送信
+   */
+  const sendReset = () => {
+    if (!webSocket) {
+      return; // 未接続の場合は何もしない
+    }
+
+    const message: ResetMessage = { type: 'reset' };
     webSocket.send(JSON.stringify(message));
   };
 
@@ -112,6 +125,15 @@ return; // 未接続またはゲーム終了時は何もしない
           ))
         )}
       </div>
+
+      {/* リセットボタン */}
+      <button
+        disabled={!winner} // 勝者が決まっていないと押せない
+        onClick={sendReset}
+        style={{ marginTop: '16px' }}
+      >
+        Reset
+      </button>
     </div>
   );
 }

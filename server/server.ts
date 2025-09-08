@@ -2,6 +2,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 import type {
   Player,
   Board,
+  Position,
   AssignMessage,
   UpdateMessage,
   MoveMessage,
@@ -88,30 +89,58 @@ webSocketServer.on('connection', (webSocket) => {
 
   // クライアントから「手を打つ」メッセージを受け取ったとき
   webSocket.on('message', (data) => {
-    const message: MoveMessage = JSON.parse(data.toString());
-    const player = players.get(webSocket);
+    const message = JSON.parse(data.toString());
 
-    // 順番が違えば無視
-    if (player !== next) {
-      return;
+    switch (message.type) {
+      case 'move': {
+        const move = message as MoveMessage;
+        const player = players.get(webSocket);
+        // 順番が違えば無視
+        if (player !== next) {
+          return;
+        }
+        // すでにマスが埋まっていれば無視
+        if (board[move.y][move.x] !== null) {
+          return;
+        }
+
+        // 手を打つ
+        board[move.y][move.x] = player;
+        // 勝者判定
+        const winner = checkWinner();
+        // 次のプレイヤーに交代
+        next = next === 'X' ? 'O' : 'X';
+        // 全員に最新盤面を通知
+        const update: UpdateMessage = {
+          type: 'update',
+          board,
+          next,
+          winner,
+        };
+        broadcast(update);
+        break;
+      }
+
+      case 'reset': {
+        // 盤面をリセット
+        for (let y = 0; y < 3; y++) {
+          for (let x = 0; x < 3; x++) {
+            board[y as Position][x as Position] = null;
+          }
+        }
+        // プレイヤーの手番をリセット
+        next = 'X';
+        // 全員にリセットされた盤面を通知
+        const update: UpdateMessage = {
+          type: 'update',
+          board,
+          next,
+          winner: null,
+        };
+        broadcast(update);
+        break;
+      }
     }
-    // すでにマスが埋まっていれば無視
-    if (board[message.y][message.x] !== null) {
-      return;
-    }
-
-    // 手を打つ
-    board[message.y][message.x] = player;
-
-    // 勝者判定
-    const winner = checkWinner();
-
-    // 次のプレイヤーに交代
-    next = next === 'X' ? 'O' : 'X';
-
-    // 全員に最新盤面を通知
-    const update: UpdateMessage = { type: 'update', board, next, winner };
-    broadcast(update);
   });
 
   // 接続終了時にプレイヤーを削除
