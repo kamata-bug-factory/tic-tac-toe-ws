@@ -133,11 +133,7 @@ export default function App() {
       </div>
 
       {/* リセットボタン */}
-      <button
-        disabled={!winner} // 勝者が決まっていないと押せない
-        onClick={sendReset}
-        style={{ marginTop: '16px' }}
-      >
+      <button         onClick={sendReset}         style={{ marginTop: '16px' }}      >
         Reset
       </button>
     </div>
