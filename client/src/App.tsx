@@ -67,12 +67,13 @@ export default function App() {
 
   /**
    * プレイヤーの手をサーバーに送信
-   *
-   * @param x - 列番号 (0〜2)
-   * @param y - 行番号 (0〜2)
+      * @param x Position 列番号 (0〜2)
+   * @param y Position 行番号 (0〜2)
    */
   const sendMove = (x: Position, y: Position) => {
-    if (!webSocket || winner) return; // 未接続またはゲーム終了時は何もしない
+    if (!webSocket || winner) {
+return; // 未接続またはゲーム終了時は何もしない
+}
 
     const message: MoveMessage = { type: 'move', x, y };
     webSocket.send(JSON.stringify(message));
