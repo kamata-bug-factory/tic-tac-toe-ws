@@ -10,14 +10,14 @@ import type {
 } from '@tic-tac-toe-ws/common';
 
 /**
- * WebSocket サーバーのインスタンスを作成。
- * ポート 8080 で待ち受ける。
+ * WebSocket サーバーのインスタンスを作成
+ * ポート 8080 で待ち受ける
  */
 const webSocketServer = new WebSocketServer({ port: 8080 });
 
 /**
- * ゲーム盤面（3x3 の二次元配列）。
- * すべて null で初期化。
+ * ゲーム盤面（3x3 の二次元配列）
+ * すべて null で初期化
  */
 const board: Board = [
   [null, null, null],
@@ -26,19 +26,19 @@ const board: Board = [
 ];
 
 /**
- * 接続中の WebSocket とプレイヤーの対応表。
- * 最初の接続には 'X' を、2人目には 'O' を割り当てる。
+ * 接続中の WebSocket -> プレイヤー割り当て Map
+ * 'X' | 'O' | null（観戦者）を割り当てる
  */
-const players: Map<WebSocket, Player> = new Map();
+const playerAssignments: Map<WebSocket, Player> = new Map();
 
 /**
- * 次に手を打つべきプレイヤー。
- * 初期値は 'X'。
+ * 次に手を打つべきプレイヤー
+ * 初期値は 'X'
  */
 let next: Player = 'X';
 
 /**
- * 勝者を判定する関数。
+ * 勝者を判定する関数
  * @returns 'X' | 'O' | 'draw' | null
  */
 function checkWinner(): Winner {
@@ -71,7 +71,7 @@ function checkWinner(): Winner {
 }
 
 /**
- * 全クライアントにゲームの最新状態を送信する関数。
+ * 全クライアントにゲームの最新状態を送信する関数
  * @param message UpdateMessage サーバーから送る更新情報
  */
 function broadcast(message: UpdateMessage) {
@@ -81,29 +81,26 @@ function broadcast(message: UpdateMessage) {
 }
 
 /**
- * 新しいクライアント接続時の処理。
- * - プレイヤー 'X' または 'O' を割り当てて通知
- * - メッセージ受信時に盤面を更新して全員にブロードキャスト
- * - 接続終了時にプレイヤーを削除
+ * 新しいクライアント接続時の処理
  */
 webSocketServer.on('connection', (webSocket) => {
   // 新規接続にプレイヤーを割り当てる
-  if (!players.has(webSocket)) {
-    const assigned: Player = players.size === 0 ? 'X' : 'O';
-    players.set(webSocket, assigned);
+  if (!playerAssignments.has(webSocket)) {
+    const assigned: Player = playerAssignments.size === 0 ? 'X' : 'O';
+    playerAssignments.set(webSocket, assigned);
 
     const assignMessage: AssignMessage = { type: 'assign', player: assigned };
     webSocket.send(JSON.stringify(assignMessage));
   }
 
-  // クライアントから「手を打つ」メッセージを受け取ったとき
+  // クライアントからメッセージを受け取ったとき
   webSocket.on('message', (data) => {
     const message = JSON.parse(data.toString());
 
     switch (message.type) {
       case 'move': {
         const move = message as MoveMessage;
-        const player = players.get(webSocket);
+        const player = playerAssignments.get(webSocket);
         // 順番が違えば無視
         if (player !== next) {
           return;
@@ -154,7 +151,7 @@ webSocketServer.on('connection', (webSocket) => {
 
   // 接続終了時にプレイヤーを削除
   webSocket.on('close', () => {
-    players.delete(webSocket);
+    playerAssignments.delete(webSocket);
   });
 });
 

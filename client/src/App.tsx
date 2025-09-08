@@ -12,9 +12,6 @@ import type {
 
 /**
  * Tic-Tac-Toe クライアントアプリ
- *
- * サーバーと WebSocket で接続し、
- * ボードの状態を更新しながらプレイヤーのターンを管理する。
  */
 export default function App() {
   // WebSocket 接続オブジェクト
@@ -38,14 +35,14 @@ export default function App() {
 
   /**
    * WebSocket 接続の初期化
-   * - 接続完了時にコンソールログ
-   * - メッセージ受信時にボード状態・プレイヤー情報を更新
    */
   useEffect(() => {
     const webSocket = new WebSocket('ws://localhost:8080');
 
+    // 接続完了
     webSocket.onopen = () => console.log('✅ Connected to server');
 
+    // サーバーからメッセージを受け取ったとき
     webSocket.onmessage = (event) => {
       const message = JSON.parse(event.data);
 
