@@ -3,8 +3,10 @@ import type {
   Player,
   Board,
   Position,
+AssignMessage,
   MoveMessage,
   ResetMessage,
+UpdateMessage,
 } from '@tic-tac-toe-ws/common';
 
 /**
@@ -47,16 +49,20 @@ export default function App() {
       const message = JSON.parse(event.data);
 
       switch (message.type) {
-        case 'assign':
+        case 'assign': {
+          const assign = message as AssignMessage;
           // サーバーから自分のプレイヤー情報を受け取る
-          setPlayer(message.player);
+          setPlayer(assign.player);
           break;
-        case 'update':
+}
+        case 'update': {
+          const update = message as UpdateMessage;
           // サーバーからのボード更新を反映
-          setBoard(message.board);
-          setNext(message.next);
-          setWinner(message.winner);
+          setBoard(update.board);
+          setNext(update.next);
+          setWinner(update.winner);
           break;
+}
       }
     };
 
