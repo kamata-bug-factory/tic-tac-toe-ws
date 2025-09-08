@@ -39,26 +39,25 @@ export interface AssignMessage {
 
 /**
  * サーバーがクライアントに送信する「ゲーム状態更新」メッセージ。
- * - 現在の盤面
- * - 次のプレイヤー
- * - 勝者（まだ決まっていなければ null）
- * を含む。
- */
+  */
 export interface UpdateMessage {
   type: 'update';
-  board: Cell[][];
+/** 現在の盤面 */
+  board: Board;
+  /** 次のプレイヤー */
   next: Player;
+/** 勝者 */
   winner: Player | null;
 }
 
 /**
  * クライアントがサーバーに送信する「手を打つ」メッセージ。
- * - x: 横方向の座標 (0, 1, 2)
- * - y: 縦方向の座標 (0, 1, 2)
- */
+  */
 export interface MoveMessage {
   type: 'move';
+/** 横方向の座標 (0, 1, 2) */
   x: Position;
+/** 縦方向の座標 (0, 1, 2) */
   y: Position;
 }
 
