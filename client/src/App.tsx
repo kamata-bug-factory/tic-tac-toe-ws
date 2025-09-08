@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import type {
   Player,
+  Winner,
   Board,
   Position,
-AssignMessage,
+  AssignMessage,
   MoveMessage,
   ResetMessage,
-UpdateMessage,
+  UpdateMessage,
 } from '@tic-tac-toe-ws/common';
 
 /**
@@ -33,7 +34,7 @@ export default function App() {
   const [next, setNext] = useState<Player>('X');
 
   // 勝者 (ゲーム進行中は null)
-  const [winner, setWinner] = useState<Player | null>(null);
+  const [winner, setWinner] = useState<Winner>(null);
 
   /**
    * WebSocket 接続の初期化
@@ -54,7 +55,7 @@ export default function App() {
           // サーバーから自分のプレイヤー情報を受け取る
           setPlayer(assign.player);
           break;
-}
+        }
         case 'update': {
           const update = message as UpdateMessage;
           // サーバーからのボード更新を反映
@@ -62,7 +63,7 @@ export default function App() {
           setNext(update.next);
           setWinner(update.winner);
           break;
-}
+        }
       }
     };
 
@@ -104,8 +105,19 @@ export default function App() {
 
       {/* プレイヤー情報とゲーム状況 */}
       <p>Your piece: {player}</p>
-      <p>Next turn: {next}</p>
-      <p>{winner ? `Winner: ${winner}` : 'In progress'}</p>
+      <p>
+        {(() => {
+          if (winner) {
+            if (winner === ('draw' as Winner)) {
+              return 'Draw';
+            } else {
+              return `Winner: ${winner}`;
+            }
+          } else {
+            return `Next turn: ${next}`;
+          }
+        })()}
+      </p>
 
       {/* ゲームボード */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 50px)' }}>
@@ -133,7 +145,7 @@ export default function App() {
       </div>
 
       {/* リセットボタン */}
-      <button         onClick={sendReset}         style={{ marginTop: '16px' }}      >
+      <button onClick={sendReset} style={{ marginTop: '16px' }}>
         Reset
       </button>
     </div>

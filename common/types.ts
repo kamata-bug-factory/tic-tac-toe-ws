@@ -5,6 +5,14 @@
 export type Player = 'X' | 'O';
 
 /**
+ * 勝者を表す型。
+ * - 'X' または 'O': 勝者
+ * - 'draw': 引き分け
+ * - null: まだ勝者が決まっていない
+ */
+export type Winner = Player | 'draw' | null;
+
+/**
  * マスの状態を表す型。
  * プレイヤーの印 ('X' または 'O') が入るか、まだ置かれていない場合は null。
  */
@@ -39,25 +47,25 @@ export interface AssignMessage {
 
 /**
  * サーバーがクライアントに送信する「ゲーム状態更新」メッセージ。
-  */
+ */
 export interface UpdateMessage {
   type: 'update';
-/** 現在の盤面 */
+  /** 現在の盤面 */
   board: Board;
   /** 次のプレイヤー */
   next: Player;
-/** 勝者 */
-  winner: Player | null;
+  /** 勝者 */
+  winner: Winner;
 }
 
 /**
  * クライアントがサーバーに送信する「手を打つ」メッセージ。
-  */
+ */
 export interface MoveMessage {
   type: 'move';
-/** 横方向の座標 (0, 1, 2) */
+  /** 横方向の座標 (0, 1, 2) */
   x: Position;
-/** 縦方向の座標 (0, 1, 2) */
+  /** 縦方向の座標 (0, 1, 2) */
   y: Position;
 }
 

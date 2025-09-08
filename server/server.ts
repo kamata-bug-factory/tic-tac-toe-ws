@@ -1,6 +1,7 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import type {
   Player,
+  Winner,
   Board,
   Position,
   AssignMessage,
@@ -38,10 +39,9 @@ let next: Player = 'X';
 
 /**
  * 勝者を判定する関数。
- * 横・縦・斜めのいずれか 3 マスが同じプレイヤーならそのプレイヤーを返す。
- * 勝者がいなければ null を返す。
+ * @returns 'X' | 'O' | 'draw' | null
  */
-function checkWinner(): Player | null {
+function checkWinner(): Winner {
   const lines = [
     // 横
     ...board,
@@ -53,11 +53,20 @@ function checkWinner(): Player | null {
     [board[0][0], board[1][1], board[2][2]],
     [board[0][2], board[1][1], board[2][0]],
   ];
+
+  // 勝者判定
   for (const line of lines) {
     if (line[0] && line[0] === line[1] && line[1] === line[2]) {
       return line[0]; // 勝者を返す
     }
   }
+
+  // 引き分け判定: 全マス埋まっていれば draw
+  const isFull = board.every((row) => row.every((cell) => cell !== null));
+  if (isFull) {
+    return 'draw' as Winner; // 引き分け
+  }
+
   return null; // まだ勝敗は決まっていない
 }
 
@@ -115,7 +124,7 @@ webSocketServer.on('connection', (webSocket) => {
           type: 'update',
           board,
           next,
-          winner,
+          winner, // 'X' | 'O' | 'draw' | null
         };
         broadcast(update);
         break;
