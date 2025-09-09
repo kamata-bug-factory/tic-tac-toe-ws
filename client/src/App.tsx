@@ -50,7 +50,7 @@ export default function App() {
    * WebSocket 接続の初期化
    */
   useEffect(() => {
-    const webSocket = new WebSocket('ws://localhost:8080');
+    const webSocket = new WebSocket(import.meta.env.VITE_WS_URL);
 
     // 接続完了
     webSocket.onopen = () => console.log('✅ Connected to server');

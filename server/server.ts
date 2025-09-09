@@ -10,10 +10,17 @@ import type {
 } from '@tic-tac-toe-ws/common';
 
 /**
+ * ポートの設定
+ * - 開発: 8080
+ * - 本番: Render などの環境変数 PORT
+ */
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+
+/**
  * WebSocket サーバーのインスタンスを作成
  * ポート 8080 で待ち受ける
  */
-const webSocketServer = new WebSocketServer({ port: 8080 });
+const webSocketServer = new WebSocketServer({ port: PORT });
 
 /**
  * ゲーム盤面（3x3 の二次元配列）
