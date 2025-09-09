@@ -159,12 +159,12 @@ export default function App() {
       {/* リセットボタン */}
       <button
         onClick={sendReset}
-        disabled={!assignedPlayer || !winner}
+        disabled={!winner || !assignedPlayer}
         style={{
           marginTop: 16,
           padding: '6px 12px',
           fontSize: 16,
-          cursor: 'pointer',
+          cursor: !winner || !assignedPlayer ? 'not-allowed' : 'pointer',
         }}
       >
         Reset
