@@ -146,7 +146,7 @@ export default function App() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: 24,
-                cursor: winner ? 'not-allowed' : 'pointer',
+                cursor: winner || !assignedPlayer ? 'not-allowed' : 'pointer',
                 backgroundColor: cell ? '#f0f0f0' : 'white',
               }}
             >
