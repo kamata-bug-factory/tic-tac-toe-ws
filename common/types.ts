@@ -38,11 +38,11 @@ export type Position = 0 | 1 | 2;
 
 /**
  * サーバーがクライアントに送信する「プレイヤー割り当て」メッセージ。
- * 接続順に 'X' または 'O' が割り当てられる。
+ * 'X' or 'O' or null（観戦者）が割り当てられる。
  */
 export interface AssignMessage {
   type: 'assign';
-  player: Player;
+  player: Player | null;
 }
 
 /**

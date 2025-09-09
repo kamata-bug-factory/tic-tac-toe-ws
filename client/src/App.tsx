@@ -16,7 +16,7 @@ import type {
 export default function App() {
   /**
    * WebSocket 接続オブジェクト
-*/
+   */
   const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
 
   /**
@@ -37,7 +37,7 @@ export default function App() {
 
   /**
    * 次のプレイヤー
-*/
+   */
   const [next, setNext] = useState<Player>('X');
 
   /**
@@ -89,8 +89,9 @@ export default function App() {
    * @param y Position 行番号 (0〜2)
    */
   const sendMove = (x: Position, y: Position) => {
-    if (!webSocket || winner) {
-      return; // 未接続またはゲーム終了時は何もしない
+    // 未接続 or ゲーム終了時 or 観戦者なら何もしない
+    if (!webSocket || winner || !assignedPlayer) {
+      return;
     }
 
     const message: MoveMessage = { type: 'move', x, y };
@@ -101,8 +102,9 @@ export default function App() {
    * ゲームリセットをサーバーに送信
    */
   const sendReset = () => {
-    if (!webSocket) {
-      return; // 未接続の場合は何もしない
+    // 未接続 or 観戦者なら何もしない
+    if (!webSocket || !assignedPlayer) {
+      return;
     }
 
     const message: ResetMessage = { type: 'reset' };
@@ -114,7 +116,7 @@ export default function App() {
       <h1>Tic-Tac-Toe</h1>
 
       {/* プレイヤー情報とゲーム状況 */}
-      <p>Your piece: {player}</p>
+      <p>Your role: {assignedPlayer ? assignedPlayer : 'Viewer'}</p>
       <p>
         {(() => {
           if (winner) {
@@ -155,7 +157,11 @@ export default function App() {
       </div>
 
       {/* リセットボタン */}
-      <button onClick={sendReset} style={{ marginTop: '16px' }}>
+      <button
+        onClick={sendReset}
+        disabled={!assignedPlayer || !winner}
+        style={{ marginTop: '16px' }}
+      >
         Reset
       </button>
     </div>

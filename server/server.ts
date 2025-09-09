@@ -29,7 +29,7 @@ const board: Board = [
  * 接続中の WebSocket -> プレイヤー割り当て Map
  * 'X' | 'O' | null（観戦者）を割り当てる
  */
-const playerAssignments: Map<WebSocket, Player> = new Map();
+const playerAssignments: Map<WebSocket, Player | null> = new Map();
 
 /**
  * 次のプレイヤー
@@ -86,7 +86,16 @@ function broadcast(message: UpdateMessage) {
 webSocketServer.on('connection', (webSocket) => {
   // 新規接続にプレイヤーを割り当てる
   if (!playerAssignments.has(webSocket)) {
-    const assigned: Player = playerAssignments.size === 0 ? 'X' : 'O';
+    let assigned: Player | null = null;
+    // 'X' が未割り当てなら 'X' を割り当て
+    if (![...playerAssignments.values()].includes('X')) {
+      assigned = 'X';
+    }
+    // 'O' が未割り当てなら 'O' を割り当て
+    else if (![...playerAssignments.values()].includes('O')) {
+      assigned = 'O';
+    }
+    // それ以降は観戦者扱い (null)
     playerAssignments.set(webSocket, assigned);
 
     const assignMessage: AssignMessage = { type: 'assign', player: assigned };
@@ -96,11 +105,14 @@ webSocketServer.on('connection', (webSocket) => {
   // クライアントからメッセージを受け取ったとき
   webSocket.on('message', (data) => {
     const message = JSON.parse(data.toString());
+    const player = playerAssignments.get(webSocket);
+    if (!player) {
+      return; // 観戦者は操作できない
+    }
 
     switch (message.type) {
       case 'move': {
         const move = message as MoveMessage;
-        const player = playerAssignments.get(webSocket);
         // 順番が違えば無視
         if (player !== next) {
           return;
