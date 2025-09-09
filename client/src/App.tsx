@@ -160,7 +160,12 @@ export default function App() {
       <button
         onClick={sendReset}
         disabled={!assignedPlayer || !winner}
-        style={{ marginTop: '16px' }}
+        style={{
+          marginTop: 16,
+          padding: '6px 12px',
+          fontSize: 16,
+          cursor: 'pointer',
+        }}
       >
         Reset
       </button>
