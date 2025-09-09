@@ -14,23 +14,36 @@ import type {
  * Tic-Tac-Toe クライアントアプリ
  */
 export default function App() {
-  // WebSocket 接続オブジェクト
+  /**
+   * WebSocket 接続オブジェクト
+*/
   const [webSocket, setWebSocket] = useState<WebSocket | null>(null);
 
-  // ゲームボードの状態 (3x3)
+  /**
+   * ゲーム盤面（3x3 の二次元配列）
+   * すべて null で初期化
+   */
   const [board, setBoard] = useState<Board>([
     [null, null, null],
     [null, null, null],
     [null, null, null],
   ]);
 
-  // このクライアントのプレイヤー ("X" または "O")
-  const [player, setPlayer] = useState<Player | null>(null);
+  /**
+   * このクライアントのプレイヤー
+   * 'X' | 'O' | null（観戦者）
+   */
+  const [assignedPlayer, setAssignedPlayer] = useState<Player | null>(null);
 
-  // 次のターンのプレイヤー
+  /**
+   * 次のプレイヤー
+*/
   const [next, setNext] = useState<Player>('X');
 
-  // 勝者 (ゲーム進行中は null)
+  /**
+   * 勝者
+   * 'X' | 'O' | 'draw' | null（ゲーム進行中）
+   */
   const [winner, setWinner] = useState<Winner>(null);
 
   /**
@@ -50,7 +63,7 @@ export default function App() {
         case 'assign': {
           const assign = message as AssignMessage;
           // サーバーから自分のプレイヤー情報を受け取る
-          setPlayer(assign.player);
+          setAssignedPlayer(assign.player);
           break;
         }
         case 'update': {

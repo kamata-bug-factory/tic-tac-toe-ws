@@ -32,7 +32,7 @@ const board: Board = [
 const playerAssignments: Map<WebSocket, Player> = new Map();
 
 /**
- * 次に手を打つべきプレイヤー
+ * 次のプレイヤー
  * 初期値は 'X'
  */
 let next: Player = 'X';
